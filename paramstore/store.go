@@ -1,32 +1,13 @@
 package paramstore
 
 import (
-	"testing"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
-	"github.com/stretchr/testify/require"
 )
 
 type Service struct {
 	client ssmiface.SSMAPI
-}
-
-type FakeClient struct {
-	ssmiface.SSMAPI
-	Path  string
-	Pages [][]*ssm.Parameter
-	T     *testing.T
-}
-
-func (f FakeClient) GetParametersByPathPages(input *ssm.GetParametersByPathInput, handler func(*ssm.GetParametersByPathOutput, bool) bool) error {
-	require.Equal(f.T, *input.Path, f.Path)
-	for i, page := range f.Pages {
-		lastPage := (i == len(f.Pages)-1)
-		handler(&ssm.GetParametersByPathOutput{Parameters: page}, lastPage)
-	}
-	return nil
 }
 
 func New(client ssmiface.SSMAPI) Service {

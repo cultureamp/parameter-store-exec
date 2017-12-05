@@ -4,13 +4,14 @@ import (
 	"testing"
 
 	"github.com/aws/aws-sdk-go/service/ssm"
+	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
 	"github.com/cultureamp/parameter-store-exec/paramstore"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGetParametersByPath(t *testing.T) {
-	svc := paramstore.New(paramstore.FakeClient{
+	svc := paramstore.New(FakeClient{
 		T:    t,
 		Path: "/foo/bar",
 		Pages: [][]*ssm.Parameter{
@@ -34,4 +35,20 @@ func TestGetParametersByPath(t *testing.T) {
 
 func param(name, value string) *ssm.Parameter {
 	return &ssm.Parameter{Name: &name, Value: &value}
+}
+
+type FakeClient struct {
+	ssmiface.SSMAPI
+	Path  string
+	Pages [][]*ssm.Parameter
+	T     *testing.T
+}
+
+func (f FakeClient) GetParametersByPathPages(input *ssm.GetParametersByPathInput, handler func(*ssm.GetParametersByPathOutput, bool) bool) error {
+	require.Equal(f.T, *input.Path, f.Path)
+	for i, page := range f.Pages {
+		lastPage := (i == len(f.Pages)-1)
+		handler(&ssm.GetParametersByPathOutput{Parameters: page}, lastPage)
+	}
+	return nil
 }
