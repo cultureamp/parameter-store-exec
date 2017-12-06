@@ -59,10 +59,10 @@ func main() {
 		for name, v := range params {
 			envKey := paramToEnv(name, path)
 			if _, present := os.LookupEnv(envKey); present {
-				log.Printf("  %s => %s already set", name, envKey)
+				log.Printf("%s => %s already set", name, envKey)
 			} else {
 				environ = append(environ, envKey+"="+v)
-				log.Printf("  %s => %s", name, envKey)
+				log.Printf("%s => %s", name, envKey)
 			}
 		}
 	} else {
