@@ -64,6 +64,9 @@ func main() {
 	syscall.Exec(program, argv, environ)
 }
 
+// argvForExec takes the os.Args from parameter-store-exec,
+// ensures there's a sub-command specified,
+// and returns a new argv ready for syscall.Exec().
 func argvForExec(osargs []string) ([]string, error) {
 	argc := len(osargs)
 	switch argc {
@@ -76,6 +79,9 @@ func argvForExec(osargs []string) ([]string, error) {
 	}
 }
 
+// paramToEnv takes a SSM Parameter Store key name like /foo/bar/api-key,
+// strips the specified path prefix e.g. /foo,
+// and returns an environment-friendly name like BAR_API_KEY.
 func paramToEnv(name, path string) string {
 	pathStripped := strings.TrimPrefix(strings.TrimPrefix(name, path), "/")
 	upper := strings.ToUpper(pathStripped)
