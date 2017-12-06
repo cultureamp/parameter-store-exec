@@ -13,7 +13,11 @@ type Service struct {
 }
 
 func (svc Service) GetParametersByPath(path string) (map[string]string, error) {
-	input := &ssm.GetParametersByPathInput{Path: aws.String(path), WithDecryption: aws.Bool(true)}
+	input := &ssm.GetParametersByPathInput{
+		Path:           aws.String(path),
+		Recursive:      aws.Bool(true),
+		WithDecryption: aws.Bool(true),
+	}
 	result := map[string]string{}
 	err := svc.Client.GetParametersByPathPages(
 		input,
