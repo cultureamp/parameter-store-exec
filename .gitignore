@@ -1,1 +1,5 @@
+# default `go build` output binary
 /parameter-store-exec
+
+# `make release` output directory
+/build/

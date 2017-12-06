@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -21,11 +22,18 @@ const (
 
 var transformPattern *regexp.Regexp
 
+var Version = "dev"
+
 func init() {
 	transformPattern = regexp.MustCompile("[^A-Z_]")
 }
 
 func main() {
+	if len(os.Args) == 2 && os.Args[1] == "--version" {
+		fmt.Printf("parameter-store-exec %s\n", Version)
+		return
+	}
+
 	log.SetOutput(os.Stderr)
 
 	argv, err := argvForExec(os.Args)
