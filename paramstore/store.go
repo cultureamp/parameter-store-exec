@@ -6,18 +6,16 @@ import (
 	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
 )
 
+// Service provides a minimal interface to SSM Parameter Store,
+// and should be
 type Service struct {
-	client ssmiface.SSMAPI
-}
-
-func New(client ssmiface.SSMAPI) Service {
-	return Service{client: client}
+	Client ssmiface.SSMAPI
 }
 
 func (svc Service) GetParametersByPath(path string) (map[string]string, error) {
 	input := &ssm.GetParametersByPathInput{Path: aws.String(path), WithDecryption: aws.Bool(true)}
 	result := map[string]string{}
-	err := svc.client.GetParametersByPathPages(
+	err := svc.Client.GetParametersByPathPages(
 		input,
 		func(resp *ssm.GetParametersByPathOutput, lastPage bool) bool {
 			for _, p := range resp.Parameters {

@@ -41,9 +41,9 @@ func main() {
 	environ := os.Environ()
 
 	if path := os.Getenv(pathEnv); path != "" {
-		store := paramstore.New(
-			ssm.New(session.Must(session.NewSession(&aws.Config{}))),
-		)
+		store := paramstore.Service{
+			Client: ssm.New(session.Must(session.NewSession(&aws.Config{}))),
+		}
 		params, err := store.GetParametersByPath(path)
 		if err != nil {
 			log.Fatal(err)

@@ -11,7 +11,7 @@ import (
 )
 
 func TestGetParametersByPath(t *testing.T) {
-	svc := paramstore.New(FakeClient{
+	svc := paramstore.Service{Client: FakeClient{
 		T:    t,
 		Path: "/foo/bar",
 		Pages: [][]*ssm.Parameter{
@@ -23,7 +23,7 @@ func TestGetParametersByPath(t *testing.T) {
 				param("/foo/bar/three", "third"),
 			},
 		},
-	})
+	}}
 	params, err := svc.GetParametersByPath("/foo/bar")
 	require.NoError(t, err)
 	assert.Equal(t, map[string]string{
