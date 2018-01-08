@@ -11,11 +11,14 @@ install:
 
 .PHONY: release
 release: \
-  build/parameter-store-exec-$(VERSION)-darwin-amd64.gz \
-  build/parameter-store-exec-$(VERSION)-linux-amd64.gz
+  build/parameter-store-exec-$(VERSION)-darwin-amd64.tar.gz \
+  build/parameter-store-exec-$(VERSION)-linux-amd64.tar.gz
 
-%.gz: %
-	gzip $<
+%.tar.gz: %
+	cp $< build/parameter-store-exec
+	chmod 0755 build/parameter-store-exec
+	tar czf $<.tar.gz -C build parameter-store-exec
+	rm build/parameter-store-exec
 
 %-darwin-amd64:
 	GOOS=darwin GOARCH=amd64 go build -ldflags="$(FLAGS)" -o $@ $(PACKAGE)
