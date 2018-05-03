@@ -7,7 +7,7 @@ A parameter store path is read from the `PARAMETER_STORE_EXEC_PATH` environment 
 
 ```sh
 # which AWS region to use; sometimes pre-set e.g. under `aws-vault`.
-export AWS_DEFAULT_REGION=us-east-1
+export AWS_REGION=us-east-1
 
 # Parameter Store path to load into environment.
 export PARAMETER_STORE_EXEC_PATH=/foo/bar
@@ -40,7 +40,7 @@ aws ssm put-parameter --name /acme/staging/xyz/password --value hunter2 --type S
 Run a command with environment injected from Parameter Store:
 
 ```sh
-export AWS_DEFAULT_REGION=us-east-1
+export AWS_REGION=us-east-1
 export PARAMETER_STORE_EXEC_PATH=/acme/staging
 
 parameter-store-exec env
