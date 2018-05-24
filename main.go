@@ -46,27 +46,38 @@ func main() {
 		log.Fatal(err)
 	}
 
-	environ := os.Environ()
-
-	if path := os.Getenv(pathEnv); path != "" {
+	parameters := map[string]string{}
+	if rawPath := os.Getenv(pathEnv); rawPath != "" {
 		store := paramstore.Service{
 			Client: ssm.New(session.Must(session.NewSession(&aws.Config{}))),
 		}
-		params, err := store.GetParametersByPath(path)
-		if err != nil {
-			log.Fatal(err)
-		}
-		for name, v := range params {
-			envKey := paramToEnv(name, path)
-			if _, present := os.LookupEnv(envKey); present {
-				log.Printf("%s => %s already set", name, envKey)
-			} else {
-				environ = append(environ, envKey+"="+v)
-				log.Printf("%s => %s", name, envKey)
+
+		// Support comma separated list of paths to get
+		clearedPath := strings.Replace(rawPath, ",", " ", -1)
+		paths := strings.Fields(clearedPath)
+		for _, path := range paths {
+			log.Printf("Getting parameters for path: %s", path)
+			params, err := store.GetParametersByPath(path)
+			if err != nil {
+				log.Fatal(err)
+			}
+			for name, value := range params {
+				envKey := paramToEnv(name, path)
+				if _, present := os.LookupEnv(envKey); present {
+					log.Printf("%s => %s already set", name, envKey)
+				} else {
+					parameters[envKey] = value
+					log.Printf("%s => %s", name, envKey)
+				}
 			}
 		}
 	} else {
 		log.Println(pathEnv, "not set")
+	}
+
+	environ := os.Environ()
+	for key, value := range parameters {
+		environ = append(environ, key + "=" + value)
 	}
 
 	syscall.Exec(program, argv, environ)
