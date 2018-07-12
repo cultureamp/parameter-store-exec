@@ -16,6 +16,7 @@ func TestParamToEnv(t *testing.T) {
 		"/a/b/five five":        "FIVE_FIVE",
 		"/a/b/Six!@#$%^&*()siX": "SIX__________SIX",
 		"/a/b/c/d/seven":        "C_D_SEVEN",
+		"/a/b/eight8":           "EIGHT8",
 	} {
 		assert.Equal(t, expected, paramToEnv(name, "/a/b"))
 	}

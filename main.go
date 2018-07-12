@@ -25,7 +25,7 @@ var transformPattern *regexp.Regexp
 var Version = "dev"
 
 func init() {
-	transformPattern = regexp.MustCompile("[^A-Z_]")
+	transformPattern = regexp.MustCompile("[^A-Z0-9_]")
 }
 
 func main() {
