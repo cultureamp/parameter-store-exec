@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParamToEnv(t *testing.T) {
+func TestParamToEnvWithTranslation(t *testing.T) {
 	for name, expected := range map[string]string{
 		"/a/b/ZERO":             "ZERO",
 		"/a/b/ONE_ONE":          "ONE_ONE",
@@ -18,7 +18,23 @@ func TestParamToEnv(t *testing.T) {
 		"/a/b/c/d/seven":        "C_D_SEVEN",
 		"/a/b/eight8":           "EIGHT8",
 	} {
-		assert.Equal(t, expected, paramToEnv(name, "/a/b"))
+		assert.Equal(t, expected, paramToEnv(name, "/a/b", true))
+	}
+}
+
+func TestParamToEnvWithoutTranslation(t *testing.T) {
+	for name, expected := range map[string]string{
+		"/a/b/ZERO":             "ZERO",
+		"/a/b/ONE_ONE":          "ONE_ONE",
+		"/a/b/two":              "two",
+		"/a/b/three-three":      "three-three",
+		"/a/b/FourFour":         "FourFour",
+		"/a/b/five five":        "five five",
+		"/a/b/Six!@#$%^&*()siX": "Six!@#$%^&*()siX",
+		"/a/b/c/d/seven":        "c/d/seven",
+		"/a/b/eight8":           "eight8",
+	} {
+		assert.Equal(t, expected, paramToEnv(name, "/a/b", false))
 	}
 }
 

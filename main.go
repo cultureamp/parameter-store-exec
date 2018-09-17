@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"strconv"
 	"strings"
 	"syscall"
 
@@ -18,6 +19,7 @@ import (
 
 const (
 	pathEnv = "PARAMETER_STORE_EXEC_PATH"
+	disableTranslation = "PARAMETER_STORE_EXEC_DISABLE_TRANSLATION"
 )
 
 var transformPattern *regexp.Regexp
@@ -56,8 +58,11 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		translationEnabled := isTranslationEnabled()
+
 		for name, v := range params {
-			envKey := paramToEnv(name, path)
+			envKey := paramToEnv(name, path, translationEnabled)
 			if _, present := os.LookupEnv(envKey); present {
 				log.Printf("%s => %s already set", name, envKey)
 			} else {
@@ -90,8 +95,26 @@ func argvForExec(osargs []string) ([]string, error) {
 // paramToEnv takes a SSM Parameter Store key name like /foo/bar/api-key,
 // strips the specified path prefix e.g. /foo,
 // and returns an environment-friendly name like BAR_API_KEY.
-func paramToEnv(name, path string) string {
-	pathStripped := strings.TrimPrefix(strings.TrimPrefix(name, path), "/")
-	upper := strings.ToUpper(pathStripped)
-	return transformPattern.ReplaceAllLiteralString(upper, "_")
+func paramToEnv(name, path string, translate bool) string {
+	result := strings.TrimPrefix(strings.TrimPrefix(name, path), "/")
+	if translate == true {
+		result = strings.ToUpper(result)
+		result = transformPattern.ReplaceAllLiteralString(result, "_")
+	}
+	return result
+}
+
+func isTranslationEnabled() bool {
+	disableValue, exists := os.LookupEnv(disableTranslation)
+	if !exists {
+		return true
+	}
+
+	disable, err := strconv.ParseBool(disableValue)
+	if err != nil {
+		log.Printf("%s had an unparseable value, enabling translation by default", disableTranslation)
+		disable = false
+	}
+
+	return !disable
 }
