@@ -17,7 +17,8 @@ import (
 )
 
 const (
-	pathEnv = "PARAMETER_STORE_EXEC_PATH"
+	pathEnv      = "PARAMETER_STORE_EXEC_PATH"
+	overwriteEnv = "PARAMETER_STORE_EXEC_OVERWRITE"
 )
 
 var transformPattern *regexp.Regexp
@@ -58,7 +59,7 @@ func main() {
 		}
 		for name, v := range params {
 			envKey := paramToEnv(name, path)
-			if _, present := os.LookupEnv(envKey); present {
+			if _, present := os.LookupEnv(envKey); present && os.Getenv(overwriteEnv) != "true" {
 				log.Printf("%s => %s already set", name, envKey)
 			} else {
 				environ = append(environ, envKey+"="+v)
