@@ -26,6 +26,8 @@ Prior art
 
 [Droplr/aws-env][aws-env] also backs onto Parameter Store, but only outputs env vars ready for shell eval, making it less suitable (but workable) as a Dockerfile `ENTRYPOINT`.
 
+For a more recent (and comprehensive) review of alternatives, see the table in the [COMPARISON](COMPARISON.md) file.
+
 
 ## Demo
 
