@@ -3,3 +3,6 @@
 
 # `make release` output directory
 /build/
+
+# ignore goland
+.idea/*

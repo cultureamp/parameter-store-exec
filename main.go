@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"regexp"
@@ -12,6 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ssm"
+	"github.com/cultureamp/glamplify/log"
 	"github.com/cultureamp/parameter-store-exec/paramstore"
 	"github.com/pkg/errors"
 )
@@ -34,16 +34,21 @@ func main() {
 		return
 	}
 
-	log.SetOutput(os.Stderr)
+	logger := log.New(func(conf *log.Config) {
+		// Do we really want Stderr here? The sensible default is Stdout
+		conf.Output = os.Stderr
+	})
 
 	argv, err := argvForExec(os.Args)
 	if err != nil {
-		log.Fatal(err)
+		logger.Error(err)
+		os.Exit(1)
 	}
 
 	program, err := exec.LookPath(argv[0])
 	if err != nil {
-		log.Fatal(err)
+		logger.Error(err)
+		os.Exit(1)
 	}
 
 	environ := os.Environ()
@@ -54,19 +59,21 @@ func main() {
 		}
 		params, err := store.GetParametersByPath(path)
 		if err != nil {
-			log.Fatal(err)
+			logger.Error(err)
+			os.Exit(1)
 		}
+
 		for name, v := range params {
 			envKey := paramToEnv(name, path)
 			if _, present := os.LookupEnv(envKey); present {
-				log.Printf("%s => %s already set", name, envKey)
+				logger.Print("environment key already set", log.Fields{name : envKey})
 			} else {
 				environ = append(environ, envKey+"="+v)
-				log.Printf("%s => %s", name, envKey)
+				logger.Print("setting environment", log.Fields{name : envKey})
 			}
 		}
 	} else {
-		log.Println(pathEnv, "not set")
+		logger.Print("environment key not set", log.Fields {"key": pathEnv})
 	}
 
 	syscall.Exec(program, argv, environ)
