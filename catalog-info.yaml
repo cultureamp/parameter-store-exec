@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: parameter-store-exec-location
+  tags:
+    - camp-foundations
+spec:
+  targets:
+   - ./catalog-info-component.yaml
