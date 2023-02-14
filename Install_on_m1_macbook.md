@@ -27,7 +27,7 @@
 11. If Not already, add the GOPATH to your system PATH. if you run the command `go env GOPATH` you will find the value. With this Value you can edit `/Users/<username>/.bash_profile` to include the line 
 
 ```
-PATH="/Users/<username>/go:${PATH}"
+PATH="/Users/<username>/go/bin:$PATH"
 ```
 
 ## Testing your install
