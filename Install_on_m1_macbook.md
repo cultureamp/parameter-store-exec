@@ -22,18 +22,13 @@
 
 9. Compile the binary with the command `GOOS=linux GOARCH=arm64 go build -ldflags="-X main.Version=$(git describe --tags --candidates=1 --dirty) -s -w" -o $@ github.com/cultureamp/parameter-store-exec`
 
-10. Create a wrapper for the binary you just compiled by creating `/usr/local/bin/parameter-store-exec` with the following contents
+10. Install the compiled binary with the command `go install -ldflags="-X main.Version=v1.1.0-1-g06841c8 -s -w" github.com/cultureamp/parameter-store-exec`
 
-    ```bash
-    #!/usr/bin/env bash
+11. If Not already, add the GOPATH to your system PATH. if you run the command `go env GOPATH` you will find the value. With this Value you can edit `/Users/<username>/.bash_profile` to include the line 
 
-    SOURCE_DIR='/usr/local/share/parameter-store-exec'
-    EXECUTABLE='github.com/cultureamp/parameter-store-exec'
-
-    cd $SOURCE_DIR
-    go run $EXECUTABLE $@
-
-    ```
+```
+PATH="/Users/<username>/go:${PATH}"
+```
 
 ## Testing your install
 
