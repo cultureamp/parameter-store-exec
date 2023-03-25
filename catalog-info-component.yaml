@@ -2,16 +2,16 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: parameter-store-exec
-  description: >
+  description: |
     Execute a command with environment loaded from AWS Parameter Store
   tags:
-    - users-na
     - camp-foundations
     - data-none
+    - users-na
   annotations:
     github.com/project-slug: parameter-store-exec
-    github.com/team-slug: cultureamp/sre
+    github.com/team-slug: cultureamp/sre-foundations
 spec:
   type: library
-  owner: sre
+  owner: sre-foundations
   lifecycle: production
