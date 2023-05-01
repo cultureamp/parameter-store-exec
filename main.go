@@ -65,7 +65,10 @@ func main() {
 		log.Println(pathEnv, "not set")
 	}
 
-	syscall.Exec(program, argv, environ)
+	err = syscall.Exec(program, argv, environ)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // argvForExec takes the os.Args from parameter-store-exec,
