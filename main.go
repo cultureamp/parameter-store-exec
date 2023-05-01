@@ -20,13 +20,9 @@ const (
 	pathEnv = "PARAMETER_STORE_EXEC_PATH"
 )
 
-var transformPattern *regexp.Regexp
+var transformPattern = regexp.MustCompile("[^A-Z0-9_]")
 
 var Version = "dev"
-
-func init() {
-	transformPattern = regexp.MustCompile("[^A-Z0-9_]")
-}
 
 func main() {
 	if len(os.Args) == 2 && os.Args[1] == "--version" {
