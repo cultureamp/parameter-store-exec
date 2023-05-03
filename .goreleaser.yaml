@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+builds:
+  - binary: parameter-store-exec
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+
+checksum:
+  name_template: 'checksums.txt'
+
+archives:
+  - id: archive
+    format: 'tar.gz'
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: false
+    # no obvious way to avoid the default apart from specifying a glob that
+    # doesn't find anything.
+    files: ["__none__*"]
+
+  - id: bin
+    format: 'binary'
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  use: git
+  # use: github-native

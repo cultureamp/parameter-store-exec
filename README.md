@@ -1,5 +1,4 @@
-parameter-store-exec
-====================
+# parameter-store-exec
 
 Run a program with [AWS Systems Manager Parameter Store][ssmps] parameters injected as environment variables. Perfect for a Docker `ENTRYPOINT` to load secret and plain configuration in production AWS.
 
@@ -16,16 +15,13 @@ export PARAMETER_STORE_EXEC_PATH=/foo/bar
 parameter-store-exec <command [args ...]>
 ```
 
-
-Prior art
----------
+## Prior art
 
 [cultureamp/s3dotenv][s3dotenv] is a similar tool, but backs onto an S3 bucket containing a [dotenv][godotenv] file. It may still be useful, but [Parameter Store][ssmps] is more suitable for storing production runtime configuration, with per-key encryption, versioning and audit.
 
 [segment/chamber][chamber] is a larger and more opinionated way to manage Parameter Store configuration. It's more restrictive regarding hierarchical path namespacing, a feature added to Parameter Store after chamber was first written.  It also needs a service name (parameter namespace) provided on the command line for `chamber exec`, making it harder to parameterize via environment at runtime. Segment did [an excellent write-up][segment-blog] on using Parameter Store for secure configuration on AWS, and particularly ECS.
 
 [Droplr/aws-env][aws-env] also backs onto Parameter Store, but only outputs env vars ready for shell eval, making it less suitable (but workable) as a Dockerfile `ENTRYPOINT`.
-
 
 ## Demo
 
@@ -56,7 +52,7 @@ parameter-store-exec env
 
 Those log messages are on `stderr`; easy to hide:
 
-```
+```sh
 parameter-store-exec env 2>/dev/null
 # ...
 # HELLO=world
@@ -67,7 +63,7 @@ parameter-store-exec env 2>/dev/null
 
 In a Dockerfile:
 
-```
+```Dockerfile
 ENTRYPOINT ["parameter-store-exec"]
 ```
 
@@ -87,15 +83,13 @@ docker run --env PARAMETER_STORE_EXEC_PATH=/acme/staging $image env
 
 Or use that same Docker image in a non-AWS environment; just don't pass `PARAMETER_STORE_EXEC_PATH`:
 
-```
+```sh
 docker run --env HELLO=local $image env
 # (stderr) 2017/12/06 15:21:45 PARAMETER_STORE_EXEC_PATH not set
 # HELLO=local
 ```
 
-
 [aws-env]: https://github.com/Droplr/aws-env
-[aws-vault]: https://github.com/99designs/aws-vault
 [chamber]: https://github.com/segmentio/chamber
 [godotenv]: https://github.com/joho/godotenv
 [s3dotenv]: https://github.com/cultureamp/s3dotenv

@@ -1,0 +1,51 @@
+name: go-checks
+
+on: [push]
+
+jobs:
+  go-ensure-deps:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: go.mod
+          cache: true
+          cache-dependency-path: go.sum
+
+      - name: Check Go Modules
+        run: make ensure-deps
+
+  go-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: go.mod
+
+      - name: Lint code
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.51.2
+          args: "-v --timeout=2m"
+
+  go-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: go.mod
+          cache: true
+          cache-dependency-path: go.sum
+
+      - name: Test code
+        run: |
+          make test
