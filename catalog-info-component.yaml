@@ -5,7 +5,7 @@ metadata:
   description: |
     Execute a command with environment loaded from AWS Parameter Store
   tags:
-    - camp-foundations
+    - camp-sre
     - data-none
     - users-na
   annotations:
