@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestParamToEnv(t *testing.T) {
@@ -24,7 +25,7 @@ func TestParamToEnv(t *testing.T) {
 
 func TestArgvForExec(t *testing.T) {
 	argv, err := argvForExec([]string{"parameter-store-exec", "echo", "hello"})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, []string{"echo", "hello"}, argv)
 }
 
