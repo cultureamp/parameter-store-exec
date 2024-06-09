@@ -31,7 +31,7 @@ jobs:
       - name: Lint code
         uses: golangci/golangci-lint-action@v4
         with:
-          version: v1.59.0
+          version: v1.59.1
           args: "-v --timeout=2m"
 
   go-test:
