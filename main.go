@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -9,9 +10,8 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ssm"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/ssm"
 	"github.com/cultureamp/parameter-store-exec/paramstore"
 	"github.com/pkg/errors"
 )
@@ -25,16 +25,23 @@ var transformPattern = regexp.MustCompile("[^A-Z0-9_]")
 var Version = "dev"
 
 func main() {
+	log.SetOutput(os.Stderr)
+	if err := run(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run() error {
 	if len(os.Args) == 2 && os.Args[1] == "--version" {
 		fmt.Printf("parameter-store-exec %s\n", Version)
-		return
+		return nil
 	}
 
-	log.SetOutput(os.Stderr)
+	ctx := context.Background()
 
 	argv, err := argvForExec(os.Args)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	program, err := exec.LookPath(argv[0])
@@ -45,12 +52,18 @@ func main() {
 	environ := os.Environ()
 
 	if path := os.Getenv(pathEnv); path != "" {
-		store := paramstore.Service{
-			Client: ssm.New(session.Must(session.NewSession(&aws.Config{}))),
-		}
-		params, err := store.GetParametersByPath(path)
+		cfg, err := config.LoadDefaultConfig(ctx)
 		if err != nil {
-			log.Fatal(err)
+			return err
+		}
+		client := ssm.NewFromConfig(cfg)
+
+		store := paramstore.Service{
+			Client: client,
+		}
+		params, err := store.GetParametersByPath(ctx, path)
+		if err != nil {
+			return err
 		}
 		for name, v := range params {
 			envKey := paramToEnv(name, path)
@@ -67,8 +80,10 @@ func main() {
 
 	err = syscall.Exec(program, argv, environ)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+
+	return nil
 }
 
 // argvForExec takes the os.Args from parameter-store-exec,

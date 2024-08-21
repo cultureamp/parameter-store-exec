@@ -1,10 +1,14 @@
 package paramstore_test
 
 import (
+	"context"
+	"errors"
+	"strconv"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/service/ssm"
-	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/ssm"
+	"github.com/aws/aws-sdk-go-v2/service/ssm/types"
 	"github.com/cultureamp/parameter-store-exec/paramstore"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -14,7 +18,7 @@ func TestGetParametersByPath(t *testing.T) {
 	svc := paramstore.Service{Client: FakeClient{
 		T:    t,
 		Path: "/foo/bar",
-		Pages: [][]*ssm.Parameter{
+		Pages: [][]types.Parameter{
 			{
 				param("/foo/bar/one", "first"),
 				param("/foo/bar/two", "second"),
@@ -24,7 +28,7 @@ func TestGetParametersByPath(t *testing.T) {
 			},
 		},
 	}}
-	params, err := svc.GetParametersByPath("/foo/bar")
+	params, err := svc.GetParametersByPath(context.Background(), "/foo/bar")
 	require.NoError(t, err)
 	assert.Equal(t, map[string]string{
 		"/foo/bar/one":   "first",
@@ -33,22 +37,49 @@ func TestGetParametersByPath(t *testing.T) {
 	}, params)
 }
 
-func param(name, value string) *ssm.Parameter {
-	return &ssm.Parameter{Name: &name, Value: &value}
+func param(name, value string) types.Parameter {
+	return types.Parameter{Name: &name, Value: &value}
 }
 
+var _ ssm.GetParametersByPathAPIClient = FakeClient{}
+
 type FakeClient struct {
-	ssmiface.SSMAPI
 	Path  string
-	Pages [][]*ssm.Parameter
+	Pages [][]types.Parameter
 	T     *testing.T
 }
 
-func (f FakeClient) GetParametersByPathPages(input *ssm.GetParametersByPathInput, handler func(*ssm.GetParametersByPathOutput, bool) bool) error {
+func (f FakeClient) GetParametersByPath(ctx context.Context, input *ssm.GetParametersByPathInput, opts ...func(*ssm.Options)) (*ssm.GetParametersByPathOutput, error) {
 	require.Equal(f.T, *input.Path, f.Path)
-	for i, page := range f.Pages {
-		lastPage := (i == len(f.Pages)-1)
-		handler(&ssm.GetParametersByPathOutput{Parameters: page}, lastPage)
+
+	pageNum, err := getPage(input.NextToken)
+	if err != nil {
+		return nil, err
 	}
-	return nil
+	if pageNum >= len(f.Pages) {
+		return nil, errors.New("invalid page")
+	}
+
+	nextPage := pageNum + 1
+	output := &ssm.GetParametersByPathOutput{Parameters: f.Pages[pageNum]}
+
+	if nextPage < len(f.Pages) {
+		output.NextToken = aws.String(strconv.Itoa(nextPage))
+	}
+
+	return output, nil
+}
+
+func getPage(nextToken *string) (int, error) {
+	pageNum := 0
+	var err error
+
+	if nextToken != nil {
+		pageNum, err = strconv.Atoi(*nextToken)
+		if err != nil {
+			return 0, err
+		}
+	}
+
+	return pageNum, nil
 }
