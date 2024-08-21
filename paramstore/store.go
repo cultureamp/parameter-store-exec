@@ -1,32 +1,36 @@
 package paramstore
 
 import (
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/ssm"
-	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
+	"context"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/ssm"
 )
 
 // Service provides a minimal interface to SSM Parameter Store,
-// and should be
+// giving us greater flexibility in a test context.
 type Service struct {
-	Client ssmiface.SSMAPI
+	Client ssm.GetParametersByPathAPIClient
 }
 
-func (svc Service) GetParametersByPath(path string) (map[string]string, error) {
+// GetParametersByPath retrieves all parameters matching a given path prefix,
+// returning them as name-value pairs in a map.
+func (svc Service) GetParametersByPath(ctx context.Context, path string) (map[string]string, error) {
 	input := &ssm.GetParametersByPathInput{
 		Path:           aws.String(path),
 		Recursive:      aws.Bool(true),
 		WithDecryption: aws.Bool(true),
 	}
 	result := map[string]string{}
-	err := svc.Client.GetParametersByPathPages(
-		input,
-		func(resp *ssm.GetParametersByPathOutput, lastPage bool) bool {
-			for _, p := range resp.Parameters {
-				result[*p.Name] = *p.Value
-			}
-			return true
-		},
-	)
-	return result, err
+	paginator := ssm.NewGetParametersByPathPaginator(svc.Client, input)
+	for paginator.HasMorePages() {
+		page, err := paginator.NextPage(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, p := range page.Parameters {
+			result[*p.Name] = *p.Value
+		}
+	}
+	return result, nil
 }
