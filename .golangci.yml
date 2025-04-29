@@ -1,24 +1,22 @@
+version: "2"
 linters:
-  enable-all: true
+  default: all
   disable:
     - asciicheck
     - depguard
     - dupl
+    - err113
     - errname
-    - exhaustivestruct
     - exhaustruct
     - forbidigo
     - funlen
-    - gci
     - gochecknoglobals
     - gocognit
     - goconst
     - godot
     - godox
-    - goerr113
-    - gofumpt
-    - gomnd
     - lll
+    - mnd
     - musttag
     - nestif
     - nilnil
@@ -34,28 +32,34 @@ linters:
     - whitespace
     - wrapcheck
     - wsl
-    # deprecated linters
-    - deadcode
-    - golint
-    - ifshort
-    - interfacer
-    - maligned
-    - nosnakecase
-    - scopelint
-    - structcheck
-    - varcheck
-
-linters-settings:
-  gosec:
-    # all rules enabled
-    # see also: https://securego.io/docs/rules/rule-intro.html
-    config:
-      global:
-        # allow #nosec override comments
-        nosec: enabled
-        # disable potentially noisy stricter audit mode
-        audit: disabled
-      G101: # "Look for hard-coded credentials"
-        mode: strict
-  cyclop:
-    max-complexity: 20
+  settings:
+    cyclop:
+      max-complexity: 20
+    gosec:
+      config:
+        G101:
+          mode: strict
+        global:
+          audit: disabled
+          nosec: enabled
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
