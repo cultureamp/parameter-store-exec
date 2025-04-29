@@ -28,7 +28,7 @@ func TestGetParametersByPath(t *testing.T) {
 			},
 		},
 	}}
-	params, err := svc.GetParametersByPath(context.Background(), "/foo/bar")
+	params, err := svc.GetParametersByPath(t.Context(), "/foo/bar")
 	require.NoError(t, err)
 	assert.Equal(t, map[string]string{
 		"/foo/bar/one":   "first",
