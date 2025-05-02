@@ -5,7 +5,7 @@ go 1.24.0
 require (
 	github.com/aws/aws-sdk-go-v2 v1.36.3
 	github.com/aws/aws-sdk-go-v2/config v1.29.14
-	github.com/aws/aws-sdk-go-v2/service/ssm v1.58.2
+	github.com/aws/aws-sdk-go-v2/service/ssm v1.59.0
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.10.0
 )
