@@ -56,6 +56,7 @@ func (f FakeClient) GetParametersByPath(ctx context.Context, input *ssm.GetParam
 	if err != nil {
 		return nil, err
 	}
+
 	if pageNum >= len(f.Pages) {
 		return nil, errors.New("invalid page")
 	}
@@ -72,6 +73,7 @@ func (f FakeClient) GetParametersByPath(ctx context.Context, input *ssm.GetParam
 
 func getPage(nextToken *string) (int, error) {
 	pageNum := 0
+
 	var err error
 
 	if nextToken != nil {

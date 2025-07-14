@@ -22,15 +22,18 @@ func (svc Service) GetParametersByPath(ctx context.Context, path string) (map[st
 		WithDecryption: aws.Bool(true),
 	}
 	result := map[string]string{}
+
 	paginator := ssm.NewGetParametersByPathPaginator(svc.Client, input)
 	for paginator.HasMorePages() {
 		page, err := paginator.NextPage(ctx)
 		if err != nil {
 			return nil, err
 		}
+
 		for _, p := range page.Parameters {
 			result[*p.Name] = *p.Value
 		}
 	}
+
 	return result, nil
 }
