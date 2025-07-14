@@ -26,7 +26,9 @@ var Version = "dev"
 
 func main() {
 	log.SetOutput(os.Stderr)
-	if err := run(); err != nil {
+
+	err := run()
+	if err != nil {
 		log.Fatal(err)
 	}
 }
@@ -56,15 +58,18 @@ func run() error {
 		if err != nil {
 			return err
 		}
+
 		client := ssm.NewFromConfig(cfg)
 
 		store := paramstore.Service{
 			Client: client,
 		}
+
 		params, err := store.GetParametersByPath(ctx, path)
 		if err != nil {
 			return err
 		}
+
 		for name, v := range params {
 			envKey := paramToEnv(name, path)
 			if _, present := os.LookupEnv(envKey); present {
@@ -107,5 +112,6 @@ func argvForExec(osargs []string) ([]string, error) {
 func paramToEnv(name, path string) string {
 	pathStripped := strings.TrimPrefix(strings.TrimPrefix(name, path), "/")
 	upper := strings.ToUpper(pathStripped)
+
 	return transformPattern.ReplaceAllLiteralString(upper, "_")
 }
