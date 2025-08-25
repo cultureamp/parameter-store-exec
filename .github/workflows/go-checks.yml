@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - uses: actions/setup-go@v5
         with:
@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - uses: actions/setup-go@v5
         with:
@@ -31,14 +31,14 @@ jobs:
       - name: Lint code
         uses: golangci/golangci-lint-action@v8
         with:
-          version: v2.2.2
+          version: v2.4.0
           args: "-v --timeout=2m"
 
   go-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - uses: actions/setup-go@v5
         with:
