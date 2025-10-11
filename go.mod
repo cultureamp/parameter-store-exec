@@ -1,6 +1,6 @@
 module github.com/cultureamp/parameter-store-exec
 
-go 1.24.5
+go 1.25.2
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.39.2
