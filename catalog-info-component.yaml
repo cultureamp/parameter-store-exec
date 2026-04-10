@@ -9,7 +9,7 @@ metadata:
     - data-none
     - users-na
   annotations:
-    github.com/project-slug: parameter-store-exec
+    github.com/project-slug: cultureamp/parameter-store-exec
     github.com/team-slug: cultureamp/sre-foundations
 spec:
   type: library
