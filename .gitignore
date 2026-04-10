@@ -3,3 +3,5 @@
 
 # `goreleaser` output directory
 /dist
+**/.claude/*.local.json
+**/CLAUDE.local.md
