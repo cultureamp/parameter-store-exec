@@ -73,17 +73,17 @@ func run() error {
 		for name, v := range params {
 			envKey := paramToEnv(name, path)
 			if _, present := os.LookupEnv(envKey); present {
-				log.Printf("%s => %s already set", name, envKey)
+				log.Printf("%s => %s already set", name, envKey) //nolint:gosec // G706: name/envKey are SSM parameter names from an operator-controlled AWS account, not untrusted user input
 			} else {
 				environ = append(environ, envKey+"="+v)
-				log.Printf("%s => %s", name, envKey)
+				log.Printf("%s => %s", name, envKey) //nolint:gosec // G706: name/envKey are SSM parameter names from an operator-controlled AWS account, not untrusted user input
 			}
 		}
 	} else {
 		log.Println(pathEnv, "not set")
 	}
 
-	err = syscall.Exec(program, argv, environ)
+	err = syscall.Exec(program, argv, environ) //nolint:gosec // G702: execing a user-specified command is the explicit purpose of this tool; program is resolved via LookPath
 	if err != nil {
 		return err
 	}
