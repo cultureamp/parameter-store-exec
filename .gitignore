@@ -5,6 +5,3 @@
 /dist
 **/.claude/*.local.json
 **/CLAUDE.local.md
-
-# devbox
-.devbox/

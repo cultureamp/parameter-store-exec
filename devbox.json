@@ -4,16 +4,7 @@
     "go@1.26.4",
     "golangci-lint@2.12.2"
   ],
-  "shell": {
-    "scripts": {
-      "check": [
-        "golangci-lint run --timeout=2m"
-      ],
-      "verify": [
-        "make ensure-deps",
-        "golangci-lint run --timeout=2m",
-        "make test"
-      ]
-    }
+  "env": {
+    "CGO_ENABLED": "0"
   }
 }

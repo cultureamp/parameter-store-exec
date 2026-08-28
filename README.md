@@ -89,18 +89,6 @@ docker run --env HELLO=local $image env
 # HELLO=local
 ```
 
-## Local development
-
-Ensure devbox is setup as per [Local Dev Environments (LDEs) - Getting Started](https://cultureamp.atlassian.net/wiki/spaces/DE/pages/3342434338/Devbox+setup).
-
-Run linting:
-
-    devbox run check
-
-Run the full test suite (also lints and checks `go.mod`/`go.sum` are tidy):
-
-    devbox run verify
-
 [aws-env]: https://github.com/Droplr/aws-env
 [chamber]: https://github.com/segmentio/chamber
 [godotenv]: https://github.com/joho/godotenv
