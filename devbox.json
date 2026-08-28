@@ -1,0 +1,19 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.18.0/.schema/devbox.schema.json",
+  "packages": [
+    "go@1.26.4",
+    "golangci-lint@2.12.2"
+  ],
+  "shell": {
+    "scripts": {
+      "check": [
+        "golangci-lint run --timeout=2m"
+      ],
+      "verify": [
+        "make ensure-deps",
+        "golangci-lint run --timeout=2m",
+        "make test"
+      ]
+    }
+  }
+}
