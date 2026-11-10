@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ssm"
 	"github.com/aws/aws-sdk-go-v2/service/ssm/types"
+	"github.com/aws/smithy-go/middleware"
 	"github.com/cultureamp/parameter-store-exec/paramstore"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -38,10 +39,20 @@ func TestGetParametersByPath(t *testing.T) {
 }
 
 func param(name, value string) types.Parameter {
-	return types.Parameter{Name: &name, Value: &value}
+	return types.Parameter{
+		ARN:              nil,
+		DataType:         nil,
+		LastModifiedDate: nil,
+		Name:             &name,
+		Selector:         nil,
+		SourceResult:     nil,
+		Type:             "",
+		Value:            &value,
+		Version:          0,
+	}
 }
 
-var _ ssm.GetParametersByPathAPIClient = FakeClient{}
+var _ ssm.GetParametersByPathAPIClient = FakeClient{Path: "", Pages: nil, T: nil}
 
 type FakeClient struct {
 	Path  string
@@ -62,7 +73,11 @@ func (f FakeClient) GetParametersByPath(ctx context.Context, input *ssm.GetParam
 	}
 
 	nextPage := pageNum + 1
-	output := &ssm.GetParametersByPathOutput{Parameters: f.Pages[pageNum]}
+	output := &ssm.GetParametersByPathOutput{
+		NextToken:      nil,
+		Parameters:     f.Pages[pageNum],
+		ResultMetadata: middleware.Metadata{},
+	}
 
 	if nextPage < len(f.Pages) {
 		output.NextToken = aws.String(strconv.Itoa(nextPage))

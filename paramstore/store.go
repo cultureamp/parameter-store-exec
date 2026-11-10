@@ -17,9 +17,12 @@ type Service struct {
 // returning them as name-value pairs in a map.
 func (svc Service) GetParametersByPath(ctx context.Context, path string) (map[string]string, error) {
 	input := &ssm.GetParametersByPathInput{
-		Path:           aws.String(path),
-		Recursive:      aws.Bool(true),
-		WithDecryption: aws.Bool(true),
+		MaxResults:       nil,
+		NextToken:        nil,
+		ParameterFilters: nil,
+		Path:             aws.String(path),
+		Recursive:        aws.Bool(true),
+		WithDecryption:   aws.Bool(true),
 	}
 	result := map[string]string{}
 
